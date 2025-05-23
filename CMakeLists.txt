@@ -216,44 +216,25 @@ install(DIRECTORY example/
 # ===============================
 
 ################################################################################
-# Export package for use from the build tree
-EXPORT( PACKAGE ${PROJECT_NAME} )
-
-# Create the RapidJSONConfig.cmake file for other cmake projects.
-# ... for the build tree
-SET( CONFIG_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
-SET( CONFIG_DIR ${CMAKE_CURRENT_BINARY_DIR})
-SET( ${PROJECT_NAME}_INCLUDE_DIR "\${${PROJECT_NAME}_SOURCE_DIR}/include" )
-
-INCLUDE(CMakePackageConfigHelpers)
-CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}Config.cmake.in
-    ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake @ONLY )
-CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}ConfigVersion.cmake.in
-    ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake @ONLY)
-
-# ... for the install tree
-SET( CMAKECONFIG_INSTALL_DIR ${LIB_INSTALL_DIR}/cmake/${PROJECT_NAME} )
-FILE( RELATIVE_PATH REL_INCLUDE_DIR
-    "${CMAKECONFIG_INSTALL_DIR}"
-    "${CMAKE_INSTALL_PREFIX}/include" )
-
-SET( ${PROJECT_NAME}_INCLUDE_DIR "\${${PROJECT_NAME}_CMAKE_DIR}/${REL_INCLUDE_DIR}" )
-SET( CONFIG_SOURCE_DIR )
-SET( CONFIG_DIR )
-CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}Config.cmake.in
-    ${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/${PROJECT_NAME}Config.cmake @ONLY )
-
-INSTALL(FILES "${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/${PROJECT_NAME}Config.cmake"
-        DESTINATION ${CMAKECONFIG_INSTALL_DIR} )
+include(CMakePackageConfigHelpers)
+write_basic_package_version_file(${PROJECT_NAME}ConfigVersion.cmake
+    COMPATIBILITY AnyNewerVersion
+)
+configure_package_config_file(
+    ${PROJECT_NAME}Config.cmake.in
+    ${PROJECT_NAME}Config.cmake
+    INSTALL_DESTINATION ${CMAKE_INSTALL_DIR}
+)
 
 # Install files
-IF(CMAKE_INSTALL_DIR)
-    INSTALL(FILES
-        ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
-        ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
-        DESTINATION "${CMAKE_INSTALL_DIR}"
-        COMPONENT dev)
-
-    INSTALL(TARGETS RapidJSON EXPORT RapidJSON-targets)
-    INSTALL(EXPORT RapidJSON-targets DESTINATION ${CMAKE_INSTALL_DIR})
-ENDIF()
+install(FILES
+    "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
+    "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
+    DESTINATION ${CMAKE_INSTALL_DIR}
+    COMPONENT dev
+)
+install(TARGETS RapidJSON EXPORT RapidJSON-targets)
+export(TARGETS RapidJSON
+    FILE RapidJSON-targets.cmake
+)
+install(EXPORT RapidJSON-targets DESTINATION ${CMAKE_INSTALL_DIR})
