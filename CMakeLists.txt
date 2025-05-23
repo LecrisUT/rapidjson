@@ -20,8 +20,6 @@ SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 option(RAPIDJSON_BUILD_DOC "Build rapidjson documentation." ON)
 option(RAPIDJSON_BUILD_EXAMPLES "Build rapidjson examples." ON)
 option(RAPIDJSON_BUILD_TESTS "Build rapidjson perftests and unittests." ON)
-option(RAPIDJSON_BUILD_THIRDPARTY_GTEST
-    "Use gtest installation in `thirdparty/gtest` by default if available" OFF)
 
 option(RAPIDJSON_BUILD_CXX11 "Build rapidjson with C++11" ON)
 option(RAPIDJSON_BUILD_CXX17 "Build rapidjson with C++17" OFF)
@@ -172,6 +170,7 @@ if(RAPIDJSON_BUILD_EXAMPLES)
 endif()
 
 if(RAPIDJSON_BUILD_TESTS)
+    enable_testing()
     if(MSVC11)
         # required for VS2012 due to missing support for variadic templates
         add_definitions(-D_VARIADIC_MAX=10)
