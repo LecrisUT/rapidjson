@@ -155,8 +155,6 @@ ELSEIF(WIN32)
 ENDIF()
 SET(CMAKE_INSTALL_DIR "${_CMAKE_INSTALL_DIR}" CACHE PATH "The directory cmake files are installed in")
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
-
 if(RAPIDJSON_BUILD_DOC)
     add_subdirectory(doc)
 endif()
@@ -196,7 +194,10 @@ install(FILES readme.md
 # Add an interface target to export it
 add_library(RapidJSON INTERFACE)
 
-target_include_directories(RapidJSON INTERFACE $<INSTALL_INTERFACE:include>)
+target_include_directories(RapidJSON INTERFACE
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:${INCLUDE_INSTALL_DIR}>
+)
 
 install(DIRECTORY include/rapidjson
     DESTINATION "${INCLUDE_INSTALL_DIR}"
